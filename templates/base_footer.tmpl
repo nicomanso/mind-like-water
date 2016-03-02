@@ -1,56 +1,46 @@
-## -*- coding: utf-8 -*-
-<%namespace name="base" file="base_helper.tmpl" import="*"/>
+{#  -*- coding: utf-8 -*- #}
+{% import 'base_helper.tmpl' as base with context %}
 
-<%def name="html_footer()">
-    %if content_footer:
-        <footer id="footer" role="contentinfo">
-            ${html_translation_header()}
-            ${html_navigation_links()}
-            %if search_form:
-                <div class="searchform" role="search">
-                    ${search_form}
-                </div>
-            %endif
-            <p>${content_footer}</p>
-            ${template_hooks['page_footer']()}
+{% macro html_footer() %}
+    {% if content_footer %}
+        <footer id="footer">
+          {{ html_navigation_links() }}
+            {% if search_form %}
+              <div class="searchform" role="search">
+                {{ search_form }}
+              </div>
+            {% endif %}
+          <p>{{ content_footer }}</p>
+          {{ template_hooks['page_footer']() }}
         </footer>
-    %endif
-</%def>
+    {% endif %}
+{% endmacro %}
 
-<%def name="html_navigation_links()">
-    <nav id="menu" role="navigation">
+{% macro html_navigation_links() %}
+    <nav id="menu">
     <ul>
-    %for url, text in navigation_links[lang]:
-        % if isinstance(url, tuple):
-            <li> ${text}
+    {% for url, text in navigation_links[lang] %}
+        {% if isinstance(url, tuple) %}
+            <li> {{ text }}
             <ul>
-            %for suburl, text in url:
-                % if rel_link(permalink, suburl) == "#":
-                    <li class="active"><a href="${permalink}">${text}</a></li>
-                %else:
-                    <li><a href="${suburl}">${text}</a></li>
-                %endif
-            %endfor
+            {% for suburl, text in url %}
+                {% if rel_link(permalink, suburl) == "#" %}
+                    <li class="active"><a href="{{ permalink }}">{{ text }} <span class="sr-only">{{ messages("(active)", lang) }}</span></a></li>
+                {% else %}
+                    <li><a href="{{ suburl }}">{{ text }}</a></li>
+                {% endif %}
+            {% endfor %}
             </ul>
-        % else:
-            % if rel_link(permalink, url) == "#":
-                <li class="active"><a href="${permalink}">${text}</a></li>
-            %else:
-                <li><a href="${url}">${text}</a></li>
-            %endif
-        % endif
-    %endfor
-    ${template_hooks['menu']()}
-    ${template_hooks['menu_alt']()}
+        {% else %}
+            {% if rel_link(permalink, url) == "#" %}
+                <li class="active"><a href="{{ permalink }}">{{ text }} <span class="sr-only">{{ messages("(active)", lang) }}</span></a></li>
+            {% else %}
+                <li><a href="{{ url }}">{{ text }}</a></li>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {{ template_hooks['menu']() }}
+    {{ template_hooks['menu_alt']() }}
     </ul>
     </nav>
-</%def>
-
-<%def name="html_translation_header()">
-    %if len(translations) > 1:
-        <div id="toptranslations">
-            <h2>${messages("Languages:")}</h2>
-            ${base.html_translations()}
-        </div>
-    %endif
-</%def>
+{% endmacro %}
