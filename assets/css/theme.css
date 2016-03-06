@@ -319,3 +319,7 @@ hr {
     width: 80%;
     margin-bottom: 1em;
 }
+
+strong {
+    font-weight: bold;
+}
